@@ -117,7 +117,7 @@ public class BitmapVision {
 
             // scan 3 stones
             //this for loop basically goes through every pixel in between a set parameter(3 stones)
-            for (int colNum = (bitmap.getWidth() / 2); colNum < bitmap.getWidth(); colNum++) {
+            for (int colNum = 0; colNum < bitmap.getWidth(); colNum++) {
 
                 //This makes sure that only the stones are sensed, not any other robots or the mats
                 for (int rowNum = (bitmap.getHeight() / 2) + 50; rowNum < (bitmap.getHeight() / 2) + 200; rowNum++) {
@@ -129,10 +129,10 @@ public class BitmapVision {
                     int greenPixel = green(pixel);
                     int bluePixel = blue(pixel);
 
-                    /*opMode.telemetry.addData("Red", redPixel);
+                    opMode.telemetry.addData("Red", redPixel);
                     opMode.telemetry.addData("Green", greenPixel);
                     opMode.telemetry.addData("Blue", bluePixel);
-                    opMode.telemetry.update();*/
+                    opMode.telemetry.update();
 
                     // only add x-coordinates of black pixels to list
                     //if you want to sense another color, then you have to experiment with the RGB values
@@ -249,6 +249,82 @@ public class BitmapVision {
         return pos;
     }
 
+    public String testVision(LinearOpMode opMode) throws InterruptedException {
+
+        //uses the previous method to get a bitmap of the right format
+        Bitmap bitmap = getBitmap();
+
+        //creating an array list to store the coordinates of the stone...will make more sense later
+        ArrayList<Integer> StoneX = new ArrayList<Integer>();
+
+        //defining variables that will be used to determine position of stone
+        String pos = "";
+        int stonexAvg = 0;
+
+        // top left = (0,0)
+
+        //makes sure that the program is active
+        while(opMode.opModeIsActive()) {
+
+            // scan 3 stones
+            //this for loop basically goes through every pixel in between a set parameter(3 stones)
+            for (int colNum = 0; colNum < bitmap.getWidth(); colNum++) {
+
+                //This makes sure that only the stones are sensed, not any other robots or the mats
+                for (int rowNum = (bitmap.getHeight() / 2) + 50; rowNum < (bitmap.getHeight() / 2) + 200; rowNum++) {
+                    //this gets the individual pixel
+                    int pixel = bitmap.getPixel(colNum, rowNum);
+
+                    // receive R, G, and B values for each pixel
+                    int redPixel = red(pixel);
+                    int greenPixel = green(pixel);
+                    int bluePixel = blue(pixel);
+
+                    //after you get the RGB values comment this telemetry out
+                    opMode.telemetry.addData("Red", redPixel);
+                    opMode.telemetry.addData("Green", greenPixel);
+                    opMode.telemetry.addData("Blue", bluePixel);
+                    opMode.telemetry.update();
+
+                    // only add x-coordinates of black pixels to list
+                    //if you want to sense another color, then you have to experiment with the RGB values
+                    if (redPixel < 30 && greenPixel < 30 && bluePixel < 30) {
+                        StoneX.add(colNum);
+                    }
+
+                }
+            }
+
+
+            // get sum of all pink pixels' x coordinates
+            for (int x : StoneX) {
+                stonexAvg += x;
+            }
+
+            // get average x-coordinate value of all pink pixels
+            stonexAvg /= StoneX.size();
+
+
+            opMode.telemetry.addData("AVG X = ", stonexAvg);
+            opMode.telemetry.update();
+
+
+
+            //determines the postion based on pre-set numbers that were determined through testing
+            if (stonexAvg < 500) {
+                pos = "left";
+            } else if (stonexAvg > 670) {
+                pos = "right";
+            } else {
+                pos = "center";
+            }
+
+            opMode.telemetry.addData("Position", pos);
+            opMode.telemetry.update();
+            break;
+        }
+        return pos;
+    }
 
     public Bitmap vufConvertToBitmap(Frame frame) { return vuforia.convertFrameToBitmap(frame); }
 
