@@ -117,7 +117,7 @@ public class BitmapVision {
 
             // scan 3 stones
             //this for loop basically goes through every pixel in between a set parameter(3 stones)
-            for (int colNum = 0; colNum < bitmap.getWidth(); colNum++) {
+            for (int colNum = bitmap.getWidth()/2; colNum < bitmap.getWidth(); colNum++) {
 
                 //This makes sure that only the stones are sensed, not any other robots or the mats
                 for (int rowNum = (bitmap.getHeight() / 2) + 50; rowNum < (bitmap.getHeight() / 2) + 200; rowNum++) {
@@ -325,6 +325,7 @@ public class BitmapVision {
         }
         return pos;
     }
+
 
     public Bitmap vufConvertToBitmap(Frame frame) { return vuforia.convertFrameToBitmap(frame); }
 
